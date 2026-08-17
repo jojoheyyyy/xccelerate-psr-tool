@@ -726,6 +726,7 @@ function removePlan(kind,index){state[kind].splice(index,1);renderEditors();upda
 function setPlan(kind,index,key,value){
   const numeric=["death","tpd","ci","early","premiumTerm","years","annual","surrender","retirement"];
   state[kind][index][key]=numeric.includes(key)?n(value):value;
+  updateCalcCells(kind,index);
   updateAll();
 }
 // Total lifetime premium, premium paid to date, and remaining premium to pay
@@ -749,7 +750,7 @@ function renderEditors(){
       <td><input class="wide" value="${esc(p.name)}" oninput="setPlan('current',${i},'name',this.value)"></td>
       ${numCell("current",i,"death",p.death)}${numCell("current",i,"tpd",p.tpd)}${numCell("current",i,"ci",p.ci)}${numCell("current",i,"early",p.early)}
       ${numCell("current",i,"premiumTerm",p.premiumTerm,1)}${numCell("current",i,"years",p.years,1)}${numCell("current",i,"annual",p.annual)}
-      ${calcCell(c.totalLifetime)}${calcCell(c.paid)}${calcCell(c.remaining)}
+      ${calcCell("current",i,"totalLifetime",c.totalLifetime)}${calcCell("current",i,"paid",c.paid)}${calcCell("current",i,"remaining",c.remaining)}
       ${numCell("current",i,"surrender",p.surrender)}${numCell("current",i,"retirement",p.retirement)}
       <td><button class="btn btn-danger" style="padding:7px 9px" onclick="removePlan('current',${i})">×</button></td>
     </tr>`;}).join("");
@@ -762,7 +763,7 @@ function renderEditors(){
       <td><input class="wide" value="${esc(p.name)}" oninput="setPlan('proposed',${i},'name',this.value)"></td>
       ${numCell("proposed",i,"death",p.death)}${numCell("proposed",i,"tpd",p.tpd)}${numCell("proposed",i,"ci",p.ci)}${numCell("proposed",i,"early",p.early)}
       ${numCell("proposed",i,"premiumTerm",p.premiumTerm,1)}${numCell("proposed",i,"years",p.years,1)}${numCell("proposed",i,"annual",p.annual)}
-      ${calcCell(c.totalLifetime)}${calcCell(c.paid)}${calcCell(c.remaining)}
+      ${calcCell("proposed",i,"totalLifetime",c.totalLifetime)}${calcCell("proposed",i,"paid",c.paid)}${calcCell("proposed",i,"remaining",c.remaining)}
       ${numCell("proposed",i,"retirement",p.retirement)}
       <td><input class="wide" value="${esc(p.remarks||"")}" oninput="setPlan('proposed',${i},'remarks',this.value)"></td>
       <td><button class="btn btn-danger" style="padding:7px 9px" onclick="removePlan('proposed',${i})">×</button></td>
@@ -774,8 +775,22 @@ function purposeSelect(kind,i,val){
 function numCell(kind,i,key,val,step=100){
   return `<td><input type="number" step="${step}" value="${n(val)}" oninput="setPlan('${kind}',${i},'${key}',this.value)"></td>`;
 }
-function calcCell(val){
-  return `<td><div class="calc-cell" title="Calculated from annual premium, premium term and years remaining">${money(val)}</div></td>`;
+function calcCell(kind,i,field,val){
+  return `<td><div class="calc-cell" id="calc-${kind}-${i}-${field}" title="Calculated from annual premium, premium term and years remaining">${money(val)}</div></td>`;
+}
+// Keep the calculated cells live as annual premium, premium term or years
+// remaining are typed in, without re-rendering the whole row (which would
+// rebuild the inputs and drop focus/cursor position mid-keystroke).
+function updateCalcCells(kind,i){
+  const p=state[kind][i];
+  if(!p) return;
+  const c=planCalc(p);
+  const totalEl=document.getElementById(`calc-${kind}-${i}-totalLifetime`);
+  const paidEl=document.getElementById(`calc-${kind}-${i}-paid`);
+  const remainEl=document.getElementById(`calc-${kind}-${i}-remaining`);
+  if(totalEl) totalEl.textContent=money(c.totalLifetime);
+  if(paidEl) paidEl.textContent=money(c.paid);
+  if(remainEl) remainEl.textContent=money(c.remaining);
 }
 
 function totals(plans){
