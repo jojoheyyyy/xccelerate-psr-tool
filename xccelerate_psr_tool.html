@@ -195,6 +195,26 @@
   .projection-table th{color:#65676e;font-weight:800}
   .notes-box{background:#fbfaf7;border:1px solid #e4dfd5;border-radius:14px;padding:16px;line-height:1.55}
   .footer-note{font-size:11px;color:#808188;margin-top:8px}
+  .part-divider{display:flex;align-items:center;gap:16px;margin:40px 0 24px}
+  .part-divider .line{flex:1;height:2px;background:linear-gradient(90deg,transparent,var(--red) 12%,var(--red) 88%,transparent)}
+  .part-divider .label{font-weight:800;letter-spacing:.1em;text-transform:uppercase;font-size:13px;color:var(--red);white-space:nowrap}
+  .invest-subhead{
+    font-family:"Playfair Display",Georgia,serif;font-size:21px;margin:0 0 14px;padding-top:22px;
+    border-top:1px solid #ece9e2;
+  }
+  .invest-subhead:first-child{padding-top:0;border-top:0}
+  .invest-subhead .tag{font-family:"Inter",Arial,sans-serif;font-size:12px;font-weight:600;color:#8a8c93;margin-left:8px}
+  .calc-readonly{
+    padding:11px 12px;border:1px dashed #d8d5ce;border-radius:11px;background:#f7f5f0;
+    color:#4d4f57;font-weight:800;
+  }
+  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
+  .stat-tile{border:1px solid #e4e1d9;border-radius:14px;padding:14px 16px;background:#faf9f5}
+  .stat-tile .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:800}
+  .stat-tile .value{font-size:21px;font-weight:800;margin:8px 0 2px;letter-spacing:-.02em;color:var(--ink)}
+  .stat-tile .value.positive{color:var(--green)}
+  .stat-tile .value.negative{color:var(--red)}
+  .stat-tile .sub{font-size:11px;color:#888}
 
   /* Clean PDF report */
   #pdf-report{position:fixed;left:-20000px;top:0;width:297mm;background:white;z-index:-1}
@@ -230,6 +250,7 @@
   .pdf-hero-badge .big{font-size:20pt;font-weight:800;margin:1.5mm 0 .8mm}
   .pdf-hero-badge .desc{font-size:7.5pt;color:#d3d3d6;line-height:1.35}
   .pdf-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:4.5mm;margin:7mm 0 6mm}
+  .pdf-kpis.cols-5{grid-template-columns:repeat(5,1fr)}
   .pdf-kpi{border:1px solid #e1ddd4;border-radius:3.5mm;padding:3.5mm;background:#fff}
   .pdf-kpi .label{font-size:7pt;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:800}
   .pdf-kpi .val{font-size:13.5pt;font-weight:800;margin:1.7mm 0 .7mm}
@@ -294,6 +315,7 @@
     .kpi-grid{grid-template-columns:repeat(2,1fr)}
     .form-grid{grid-template-columns:repeat(2,1fr)}
     .field.span2,.field.span3{grid-column:span 1}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:650px){
     .app-header{position:static;align-items:flex-start;flex-direction:column}
@@ -304,6 +326,8 @@
     .form-grid{grid-template-columns:1fr}
     .panel-head{flex-direction:column;align-items:stretch}
     .panel-head .btn{align-self:flex-start}
+    .stat-grid{grid-template-columns:1fr}
+    .part-divider .label{font-size:11px}
   }
   @media print{
     body{background:white}
@@ -342,6 +366,7 @@
     <button onclick="scrollToId('summary')">Summary</button>
     <button onclick="scrollToId('investment')">Investment Projection</button>
     <button onclick="scrollToId('notes')">Notes</button>
+    <button onclick="scrollToId('investment-optimization')">Investment Optimization</button>
   </nav>
 
   <section class="panel" id="client-details">
@@ -511,6 +536,72 @@
       </div>
     </div>
   </section>
+
+  <div class="part-divider">
+    <span class="line"></span>
+    <span class="label">Part 2 · Investment Optimization</span>
+    <span class="line"></span>
+  </div>
+
+  <section class="panel" id="investment-optimization">
+    <div class="panel-head">
+      <div>
+        <div class="eyebrow">Optional add-on</div>
+        <h2>Investment optimization</h2>
+        <p>Compare an existing investment-linked plan against up to two recommended replacement plans. This section is optional — it's only added to the exported PDF when at least one field below is filled in.</p>
+      </div>
+    </div>
+    <div class="panel-body">
+      <h3 class="invest-subhead">Current plan</h3>
+      <div class="form-grid">
+        <div class="field span2"><label>Plan name</label><input id="invCurName" placeholder="e.g. Existing ILP" oninput="updateAll()"></div>
+        <div class="field"><label>Monthly premium</label><input id="invCurMonthly" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>Premium term remaining (yrs)</label><input id="invCurTerm" type="number" step="1" oninput="updateAll()"></div>
+        <div class="field"><label>Account value</label><input id="invCurAccount" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Max withdrawal value</label><input id="invCurMaxWithdraw" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Full surrender value</label><input id="invCurSurrender" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @4%</label><input id="invCurProj4" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @8%</label><input id="invCurProj8" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Nett loss on surrender</label><div class="calc-readonly" id="invCurNettLoss">$0</div></div>
+      </div>
+
+      <h3 class="invest-subhead">Recommended plan A</h3>
+      <div class="form-grid">
+        <div class="field span2"><label>Plan name</label><input id="invAName" placeholder="e.g. Recommended plan A" oninput="updateAll()"></div>
+        <div class="field"><label>Monthly premium</label><input id="invAMonthly" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>New premium term (yrs)</label><input id="invATerm" type="number" step="1" oninput="updateAll()"></div>
+        <div class="field"><label>Annual premium across 3 yrs</label><input id="invAAnnual3yr" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Start-up bonus (2 yrs)</label><input id="invABonusStartup" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>Yr 1 extra campaign bonus</label><input id="invABonusCampaign" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @4%</label><input id="invAProj4" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @8%</label><input id="invAProj8" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Total bonus</label><div class="calc-readonly" id="invABonus">$0</div></div>
+      </div>
+
+      <h3 class="invest-subhead">Recommended plan B <span class="tag">(optional — leave blank if there's only one recommended plan)</span></h3>
+      <div class="form-grid">
+        <div class="field span2"><label>Plan name</label><input id="invBName" placeholder="e.g. Recommended plan B" oninput="updateAll()"></div>
+        <div class="field"><label>Monthly premium</label><input id="invBMonthly" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>New premium term (yrs)</label><input id="invBTerm" type="number" step="1" oninput="updateAll()"></div>
+        <div class="field"><label>Annual premium across 3 yrs</label><input id="invBAnnual3yr" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Start-up bonus (2 yrs)</label><input id="invBBonusStartup" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>Yr 1 extra campaign bonus</label><input id="invBBonusCampaign" type="number" step="10" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @4%</label><input id="invBProj4" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Projected value @8%</label><input id="invBProj8" type="number" step="100" oninput="updateAll()"></div>
+        <div class="field"><label>Total bonus</label><div class="calc-readonly" id="invBBonus">$0</div></div>
+      </div>
+
+      <h3 class="invest-subhead">Impact summary <span class="tag">(calculated automatically)</span></h3>
+      <div class="stat-grid">
+        <div class="stat-tile"><div class="label">Nett loss on surrender</div><div class="value" id="statNettLoss">$0</div><div class="sub">Full surrender value − account value</div></div>
+        <div class="stat-tile"><div class="label">Total switch bonuses</div><div class="value" id="statTotalBonus">$0</div><div class="sub">Recommended plan A + B</div></div>
+        <div class="stat-tile"><div class="label">Net position now</div><div class="value" id="statCurrentGain">$0</div><div class="sub">Nett loss + total bonuses</div></div>
+        <div class="stat-tile"><div class="label">Future gain @4%</div><div class="value" id="statFutureGain4">$0</div><div class="sub">Vs current plan, net of extra premium</div></div>
+        <div class="stat-tile"><div class="label">Future gain @8%</div><div class="value" id="statFutureGain8">$0</div><div class="sub">Vs current plan, net of extra premium</div></div>
+      </div>
+      <p class="footer-note">Nett loss, total bonuses and future gain are illustrative and depend on the figures entered above. This is not a guarantee of surrender terms, bonus eligibility or investment performance.</p>
+    </div>
+  </section>
 </main>
 
 <!-- Off-screen, client-ready A4 landscape report -->
@@ -633,6 +724,33 @@
     </div>
     <div class="pdf-footer"><span>Xccelerate · Portfolio Optimization Strategy</span><span>Page 3 · Assumptions & projection</span></div>
   </section>
+
+  <section class="pdf-page" data-page="investment">
+    <div class="pdf-top-bar"></div>
+    <div class="pdf-watermark"></div>
+    <div class="pdf-section-title">
+      <div><div class="eyebrow">Part 2 · Investment optimization</div><h2>Current plan vs recommended strategy</h2><div class="pdf-accent-rule"></div></div>
+      <p>Comparison of the existing investment-linked plan against the recommended replacement plan(s).</p>
+    </div>
+    <div class="pdf-kpis cols-5">
+      <div class="pdf-kpi"><div class="label">Nett loss on surrender</div><div class="val" id="pdfInvNettLoss">$0</div><div class="sub">Surrender value − account value</div></div>
+      <div class="pdf-kpi"><div class="label">Total switch bonuses</div><div class="val" id="pdfInvBonus">$0</div><div class="sub">Recommended plan A + B</div></div>
+      <div class="pdf-kpi"><div class="label">Net position now</div><div class="val" id="pdfInvCurrentGain">$0</div><div class="sub">Nett loss + total bonuses</div></div>
+      <div class="pdf-kpi"><div class="label">Future gain @4%</div><div class="val" id="pdfInvFuture4">$0</div><div class="sub">Vs current plan, net of premium</div></div>
+      <div class="pdf-kpi"><div class="label">Future gain @8%</div><div class="val" id="pdfInvFuture8">$0</div><div class="sub">Vs current plan, net of premium</div></div>
+    </div>
+    <div class="pdf-plan-block">
+      <div class="pdf-plan-head current"><span>Plan comparison</span><span>Illustrative</span></div>
+      <table class="pdf-table">
+        <thead><tr><th>Metric</th><th>Current plan</th><th>Recommended A</th><th>Recommended B</th><th>Combined recommended</th></tr></thead>
+        <tbody id="pdfInvestTable"></tbody>
+      </table>
+    </div>
+    <div class="pdf-disclaimer">
+      <strong>Important information.</strong> Nett loss, bonuses and future gain figures are illustrative, based solely on the figures entered by the financial consultant. They are not a guarantee of surrender terms, bonus eligibility, product performance or investment returns. Product-specific terms, charges and suitability should still follow your firm's approved process.
+    </div>
+    <div class="pdf-footer"><span>Xccelerate · Portfolio Optimization Strategy</span><span>Page 4 · Investment optimization</span></div>
+  </section>
 </div>
 
 <script>
@@ -649,10 +767,22 @@ const demoState = {
     {purpose:"Protection",type:"Term + CI",name:"Family Protect Plus",death:1200000,tpd:1200000,ci:400000,early:200000,premiumTerm:20,years:20,annual:3400,retirement:0,remarks:"Higher protection during key responsibility years"},
     {purpose:"Medical",type:"Hospital",name:"Integrated Shield",death:0,tpd:0,ci:0,early:0,premiumTerm:30,years:30,annual:1800,retirement:0,remarks:"Retained"},
     {purpose:"Retirement",type:"Investment",name:"Retirement Portfolio",death:0,tpd:0,ci:0,early:0,premiumTerm:20,years:20,annual:2400,retirement:180000,remarks:"Illustrative policy / investment value"}
-  ]
+  ],
+  invest:{
+    cur:{name:"Legacy ILP",monthly:500,term:15,account:42000,maxWithdraw:38000,surrender:36000,proj4:120000,proj8:165000},
+    a:{name:"Optimized ILP",monthly:500,term:15,annual3yr:6000,bonusStartup:800,bonusCampaign:300,proj4:140000,proj8:195000},
+    b:{name:"Supplementary Plan B",monthly:200,term:15,annual3yr:0,bonusStartup:100,bonusCampaign:0,proj4:20000,proj8:26000}
+  }
 };
 
-let state = {client:{},notes:"",current:[],proposed:[]};
+function blankInvest(){
+  return {
+    cur:{name:"",monthly:0,term:0,account:0,maxWithdraw:0,surrender:0,proj4:0,proj8:0},
+    a:{name:"",monthly:0,term:0,annual3yr:0,bonusStartup:0,bonusCampaign:0,proj4:0,proj8:0},
+    b:{name:"",monthly:0,term:0,annual3yr:0,bonusStartup:0,bonusCampaign:0,proj4:0,proj8:0}
+  };
+}
+let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest()};
 
 function n(v){ const x=parseFloat(v); return Number.isFinite(x)?x:0; }
 function money(v, compact=false){
@@ -677,7 +807,7 @@ function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&
 function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
 function loadDemo(){ state=clone(demoState); syncStateToFields(); renderEditors(); updateAll(); saveData(); }
 function clearAll(){
-  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[]};
+  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest()};
   syncStateToFields(); renderEditors(); updateAll(); localStorage.removeItem("xccelerate_psr_state");
 }
 function saveData(){
@@ -689,6 +819,7 @@ function restoreData(){
     const raw=localStorage.getItem("xccelerate_psr_state");
     if(raw){state=JSON.parse(raw)} else {state=clone(demoState)}
   }catch(e){state=clone(demoState)}
+  state.invest=state.invest||blankInvest(); // older saved sessions predate this section
   syncStateToFields(); renderEditors(); updateAll();
 }
 function syncStateToFields(){
@@ -702,6 +833,32 @@ function syncStateToFields(){
   document.getElementById("returnLabel").value=c.scenario||"Illustrative";
   document.getElementById("lumpSumOverride").value=c.lumpSumOverride??"";
   document.getElementById("advisorNotes").value=state.notes||"";
+
+  const inv=state.invest||blankInvest();
+  document.getElementById("invCurName").value=inv.cur.name||"";
+  document.getElementById("invCurMonthly").value=n(inv.cur.monthly);
+  document.getElementById("invCurTerm").value=n(inv.cur.term);
+  document.getElementById("invCurAccount").value=n(inv.cur.account);
+  document.getElementById("invCurMaxWithdraw").value=n(inv.cur.maxWithdraw);
+  document.getElementById("invCurSurrender").value=n(inv.cur.surrender);
+  document.getElementById("invCurProj4").value=n(inv.cur.proj4);
+  document.getElementById("invCurProj8").value=n(inv.cur.proj8);
+  document.getElementById("invAName").value=inv.a.name||"";
+  document.getElementById("invAMonthly").value=n(inv.a.monthly);
+  document.getElementById("invATerm").value=n(inv.a.term);
+  document.getElementById("invAAnnual3yr").value=n(inv.a.annual3yr);
+  document.getElementById("invABonusStartup").value=n(inv.a.bonusStartup);
+  document.getElementById("invABonusCampaign").value=n(inv.a.bonusCampaign);
+  document.getElementById("invAProj4").value=n(inv.a.proj4);
+  document.getElementById("invAProj8").value=n(inv.a.proj8);
+  document.getElementById("invBName").value=inv.b.name||"";
+  document.getElementById("invBMonthly").value=n(inv.b.monthly);
+  document.getElementById("invBTerm").value=n(inv.b.term);
+  document.getElementById("invBAnnual3yr").value=n(inv.b.annual3yr);
+  document.getElementById("invBBonusStartup").value=n(inv.b.bonusStartup);
+  document.getElementById("invBBonusCampaign").value=n(inv.b.bonusCampaign);
+  document.getElementById("invBProj4").value=n(inv.b.proj4);
+  document.getElementById("invBProj8").value=n(inv.b.proj8);
 }
 function syncFieldsToState(){
   state.client={
@@ -715,6 +872,103 @@ function syncFieldsToState(){
     lumpSumOverride:document.getElementById("lumpSumOverride").value
   };
   state.notes=document.getElementById("advisorNotes").value;
+
+  state.invest={
+    cur:{
+      name:document.getElementById("invCurName").value,
+      monthly:n(document.getElementById("invCurMonthly").value),
+      term:n(document.getElementById("invCurTerm").value),
+      account:n(document.getElementById("invCurAccount").value),
+      maxWithdraw:n(document.getElementById("invCurMaxWithdraw").value),
+      surrender:n(document.getElementById("invCurSurrender").value),
+      proj4:n(document.getElementById("invCurProj4").value),
+      proj8:n(document.getElementById("invCurProj8").value)
+    },
+    a:{
+      name:document.getElementById("invAName").value,
+      monthly:n(document.getElementById("invAMonthly").value),
+      term:n(document.getElementById("invATerm").value),
+      annual3yr:n(document.getElementById("invAAnnual3yr").value),
+      bonusStartup:n(document.getElementById("invABonusStartup").value),
+      bonusCampaign:n(document.getElementById("invABonusCampaign").value),
+      proj4:n(document.getElementById("invAProj4").value),
+      proj8:n(document.getElementById("invAProj8").value)
+    },
+    b:{
+      name:document.getElementById("invBName").value,
+      monthly:n(document.getElementById("invBMonthly").value),
+      term:n(document.getElementById("invBTerm").value),
+      annual3yr:n(document.getElementById("invBAnnual3yr").value),
+      bonusStartup:n(document.getElementById("invBBonusStartup").value),
+      bonusCampaign:n(document.getElementById("invBBonusCampaign").value),
+      proj4:n(document.getElementById("invBProj4").value),
+      proj8:n(document.getElementById("invBProj8").value)
+    }
+  };
+}
+// Nett loss, per-plan switch bonuses, and future gain @4%/@8% are all
+// derived from the current-vs-recommended figures above, rather than
+// entered directly.
+function investCalc(){
+  const inv=state.invest||blankInvest();
+  const cur=inv.cur, a=inv.a, b=inv.b;
+  const nettLoss=n(cur.surrender)-n(cur.account);
+  const bonusA=n(a.bonusStartup)+n(a.bonusCampaign)+0.17*n(a.annual3yr);
+  const bonusB=n(b.bonusStartup)+n(b.bonusCampaign)+0.17*n(b.annual3yr);
+  const totalBonus=bonusA+bonusB;
+  const totalMonthly=n(a.monthly)+n(b.monthly);
+  const totalProj4=n(a.proj4)+n(b.proj4);
+  const totalProj8=n(a.proj8)+n(b.proj8);
+  const currentGain=nettLoss+totalBonus;
+  const extraPremiumOutlay=(totalMonthly-n(cur.monthly))*12*n(cur.term);
+  const futureGain4=(totalProj4-n(cur.proj4))-extraPremiumOutlay;
+  const futureGain8=(totalProj8-n(cur.proj8))-extraPremiumOutlay;
+  return {nettLoss,bonusA,bonusB,totalBonus,totalMonthly,totalProj4,totalProj8,currentGain,extraPremiumOutlay,futureGain4,futureGain8};
+}
+function hasInvestData(){
+  const inv=state.invest||blankInvest();
+  const numericFields=[
+    inv.cur.monthly,inv.cur.term,inv.cur.account,inv.cur.maxWithdraw,inv.cur.surrender,inv.cur.proj4,inv.cur.proj8,
+    inv.a.monthly,inv.a.term,inv.a.annual3yr,inv.a.bonusStartup,inv.a.bonusCampaign,inv.a.proj4,inv.a.proj8,
+    inv.b.monthly,inv.b.term,inv.b.annual3yr,inv.b.bonusStartup,inv.b.bonusCampaign,inv.b.proj4,inv.b.proj8
+  ];
+  const hasNumeric=numericFields.some(v=>n(v)!==0);
+  const hasName=[inv.cur.name,inv.a.name,inv.b.name].some(v=>(v||"").trim()!=="");
+  return hasNumeric||hasName;
+}
+function setStatClass(id,val){
+  const el=document.getElementById(id);
+  el.classList.remove("positive","negative");
+  el.classList.add(n(val)>=0?"positive":"negative");
+}
+function renderInvestScreen(){
+  const c=investCalc();
+  document.getElementById("invCurNettLoss").textContent=money(c.nettLoss);
+  document.getElementById("invABonus").textContent=money(c.bonusA);
+  document.getElementById("invBBonus").textContent=money(c.bonusB);
+  document.getElementById("statNettLoss").textContent=money(c.nettLoss); setStatClass("statNettLoss",c.nettLoss);
+  document.getElementById("statTotalBonus").textContent=money(c.totalBonus); setStatClass("statTotalBonus",c.totalBonus);
+  document.getElementById("statCurrentGain").textContent=money(c.currentGain); setStatClass("statCurrentGain",c.currentGain);
+  document.getElementById("statFutureGain4").textContent=money(c.futureGain4); setStatClass("statFutureGain4",c.futureGain4);
+  document.getElementById("statFutureGain8").textContent=money(c.futureGain8); setStatClass("statFutureGain8",c.futureGain8);
+}
+function renderInvestPdf(){
+  const c=investCalc(), inv=state.invest||blankInvest();
+  const pdfInvVals=[["pdfInvNettLoss",c.nettLoss],["pdfInvBonus",c.totalBonus],["pdfInvCurrentGain",c.currentGain],["pdfInvFuture4",c.futureGain4],["pdfInvFuture8",c.futureGain8]];
+  pdfInvVals.forEach(([id,val])=>{
+    const el=document.getElementById(id);
+    el.textContent=money(val);
+    el.className="val "+(n(val)>=0?"positive":"negative");
+  });
+  const rows=[
+    ["Plan name",esc(inv.cur.name)||"—",esc(inv.a.name)||"—",esc(inv.b.name)||"—",""],
+    ["Monthly premium",money(inv.cur.monthly),money(inv.a.monthly),money(inv.b.monthly),money(c.totalMonthly)],
+    ["Premium term (yrs)",n(inv.cur.term)||"—",n(inv.a.term)||"—",n(inv.b.term)||"—",""],
+    ["Account value / full surrender",`${money(inv.cur.account)} / ${money(inv.cur.surrender)}`,"—","—",""],
+    ["Projected value @4%",money(inv.cur.proj4),money(inv.a.proj4),money(inv.b.proj4),money(c.totalProj4)],
+    ["Projected value @8%",money(inv.cur.proj8),money(inv.a.proj8),money(inv.b.proj8),money(c.totalProj8)]
+  ];
+  document.getElementById("pdfInvestTable").innerHTML=rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]!==""?`<strong>${r[4]}</strong>`:""}</td></tr>`).join("");
 }
 
 function blankPlan(kind){
@@ -933,6 +1187,7 @@ function updateScreen(){
   buildCoverageBars("screenCoverageBars",false);
   document.getElementById("screenFinanceList").innerHTML=financeRows(false);
   updateProjectionTable();
+  renderInvestScreen();
 }
 
 function planPdfRows(plans){
@@ -1001,6 +1256,8 @@ function updatePdf(){
   let checkpoints=p.rows.filter(r=>r.year===1 || r.year===p.years || r.year%5===0);
   if(checkpoints.length>10) checkpoints=checkpoints.filter((r,i)=>i%2===0 || r.year===p.years);
   document.getElementById("pdfProjectionTable").innerHTML=checkpoints.map(r=>`<tr><td><strong>${r.age}</strong></td><td>${money(r.current)}</td><td>${money(r.proposed)}</td><td class="${r.diff>=0?"positive":"negative"}">${money(r.diff)}</td><td><strong>${money(r.balance)}</strong></td></tr>`).join("") || `<tr><td colspan="5" style="text-align:center;color:#999;padding:6mm">Enter valid ages to generate the projection.</td></tr>`;
+
+  renderInvestPdf();
 }
 
 function updateAll(){
@@ -1030,7 +1287,10 @@ async function downloadPDFInner(){
   if(document.fonts && document.fonts.ready){ try{ await document.fonts.ready; }catch(e){} }
   const filename=`Portfolio_Optimization_Strategy_${(state.client.name||"Client").replace(/[^a-z0-9]+/gi,"_")}_${state.client.date||"Review"}.pdf`;
   const source=document.getElementById("pdf-report");
-  const pageEls=[...source.querySelectorAll(".pdf-page")];
+  // The investment optimization page is only included in the export when
+  // that section has actually been filled in.
+  let pageEls=[...source.querySelectorAll(".pdf-page")];
+  if(!hasInvestData()) pageEls=pageEls.filter(el=>el.dataset.page!=="investment");
   // Render each A4 page individually with html2canvas and stitch with jsPDF.
   // (html2pdf.js's own bundler was found to mis-center its internal capture
   // container, silently cropping/misaligning the exported pages.)
