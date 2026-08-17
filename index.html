@@ -400,9 +400,9 @@
     <div class="panel-body">
       <div class="editor-table-wrap"><table class="editor"><thead><tr>
         <th>Purpose</th><th>Plan type</th><th>Policy / plan</th><th>Death</th><th>TPD</th><th>Critical illness</th><th>Early CI / other</th>
-        <th>Premium term (yrs)</th><th>Years remaining</th><th>Annual premium</th><th>Total lifetime premium</th><th>Premium paid to date</th><th>Remaining premium to pay</th><th>Cash value @ retirement</th><th>Remarks</th><th></th>
+        <th>Premium term (yrs)</th><th>Years remaining</th><th>Annual premium</th><th>Total lifetime premium</th><th>Cash value @ retirement</th><th>Remarks</th><th></th>
       </tr></thead><tbody id="proposedRows"></tbody></table></div>
-      <p class="small" style="margin-top:10px">Total lifetime premium, premium paid to date and remaining premium to pay are calculated automatically from the annual premium, premium term and years remaining.</p>
+      <p class="small" style="margin-top:10px">Total lifetime premium is calculated automatically from the annual premium and premium term.</p>
       <div class="table-actions"><button class="btn btn-light" onclick="addPlan('proposed')">+ Add proposed plan</button></div>
     </div>
   </section>
@@ -763,7 +763,7 @@ function renderEditors(){
       <td><input class="wide" value="${esc(p.name)}" oninput="setPlan('proposed',${i},'name',this.value)"></td>
       ${numCell("proposed",i,"death",p.death)}${numCell("proposed",i,"tpd",p.tpd)}${numCell("proposed",i,"ci",p.ci)}${numCell("proposed",i,"early",p.early)}
       ${numCell("proposed",i,"premiumTerm",p.premiumTerm,1)}${numCell("proposed",i,"years",p.years,1)}${numCell("proposed",i,"annual",p.annual)}
-      ${calcCell("proposed",i,"totalLifetime",c.totalLifetime)}${calcCell("proposed",i,"paid",c.paid)}${calcCell("proposed",i,"remaining",c.remaining)}
+      ${calcCell("proposed",i,"totalLifetime",c.totalLifetime)}
       ${numCell("proposed",i,"retirement",p.retirement)}
       <td><input class="wide" value="${esc(p.remarks||"")}" oninput="setPlan('proposed',${i},'remarks',this.value)"></td>
       <td><button class="btn btn-danger" style="padding:7px 9px" onclick="removePlan('proposed',${i})">×</button></td>
