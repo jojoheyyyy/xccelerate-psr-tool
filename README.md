@@ -1,4 +1,4 @@
-# Xccelerate Portfolio Optimization Strategy
+# Xccelerate Insurance & Investment Optimization Strategy
 
 A single-file HTML tool for financial consultants to compare a client's current
 vs. proposed insurance and investment portfolio, and export a branded,
