@@ -178,12 +178,14 @@
   .projection-card{
     display:grid;grid-template-columns:1fr 1fr;gap:18px;
   }
+  .projection-card>*{min-width:0}
   .projection-hero{
     background:var(--ink);color:white;border-radius:18px;padding:22px;
   }
   .projection-hero .big{font-size:42px;font-weight:800;letter-spacing:-.04em;margin:12px 0 8px}
   .projection-hero .muted{color:#bdbfc4;font-size:13px;line-height:1.5}
-  .projection-table{width:100%;border-collapse:collapse}
+  .projection-table-wrap{overflow-x:auto}
+  .projection-table{width:100%;border-collapse:collapse;min-width:520px}
   .projection-table th,.projection-table td{padding:10px 8px;border-bottom:1px solid #ece8df;font-size:12px;text-align:right}
   .projection-table th:first-child,.projection-table td:first-child{text-align:left}
   .projection-table th{color:#65676e;font-weight:800}
@@ -294,8 +296,10 @@
     .app-shell{padding:16px}
     .brand-lockup img{width:145px;height:auto}
     .kpi-grid{grid-template-columns:1fr}
-    .summary-title h1{font-size:36px}
+    .summary-title h1{font-size:32px}
     .form-grid{grid-template-columns:1fr}
+    .panel-head{flex-direction:column;align-items:stretch}
+    .panel-head .btn{align-self:flex-start}
   }
   @media print{
     body{background:white}
@@ -475,7 +479,7 @@
           <div class="big" id="projectionBig">$0</div>
           <div class="muted" id="projectionText">Based on the current assumptions.</div>
         </div>
-        <div>
+        <div class="projection-table-wrap">
           <table class="projection-table">
             <thead><tr><th>Age</th><th>Current premiums</th><th>Proposed premiums</th><th>Invested difference</th><th>Projected balance</th></tr></thead>
             <tbody id="projectionRows"></tbody>
