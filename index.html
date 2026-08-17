@@ -204,17 +204,6 @@
   }
   .invest-subhead:first-child{padding-top:0;border-top:0}
   .invest-subhead .tag{font-family:"Inter",Arial,sans-serif;font-size:12px;font-weight:600;color:#8a8c93;margin-left:8px}
-  .calc-readonly{
-    padding:11px 12px;border:1px dashed #d8d5ce;border-radius:11px;background:#f7f5f0;
-    color:#4d4f57;font-weight:800;
-  }
-  .stat-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:16px}
-  .stat-tile{border:1px solid #e4e1d9;border-radius:14px;padding:14px 16px;background:#faf9f5}
-  .stat-tile .label{font-size:10.5px;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:800}
-  .stat-tile .value{font-size:21px;font-weight:800;margin:8px 0 2px;letter-spacing:-.02em;color:var(--ink)}
-  .stat-tile .value.positive{color:var(--green)}
-  .stat-tile .value.negative{color:var(--red)}
-  .stat-tile .sub{font-size:11px;color:#888}
 
   /* Clean PDF report */
   #pdf-report{position:fixed;left:-20000px;top:0;width:297mm;background:white;z-index:-1}
@@ -250,7 +239,6 @@
   .pdf-hero-badge .big{font-size:20pt;font-weight:800;margin:1.5mm 0 .8mm}
   .pdf-hero-badge .desc{font-size:7.5pt;color:#d3d3d6;line-height:1.35}
   .pdf-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:4.5mm;margin:7mm 0 6mm}
-  .pdf-kpis.cols-5{grid-template-columns:repeat(5,1fr)}
   .pdf-kpi{border:1px solid #e1ddd4;border-radius:3.5mm;padding:3.5mm;background:#fff}
   .pdf-kpi .label{font-size:7pt;text-transform:uppercase;letter-spacing:.06em;color:#777;font-weight:800}
   .pdf-kpi .val{font-size:13.5pt;font-weight:800;margin:1.7mm 0 .7mm}
@@ -315,7 +303,6 @@
     .kpi-grid{grid-template-columns:repeat(2,1fr)}
     .form-grid{grid-template-columns:repeat(2,1fr)}
     .field.span2,.field.span3{grid-column:span 1}
-    .stat-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:650px){
     .app-header{position:static;align-items:flex-start;flex-direction:column}
@@ -326,7 +313,6 @@
     .form-grid{grid-template-columns:1fr}
     .panel-head{flex-direction:column;align-items:stretch}
     .panel-head .btn{align-self:flex-start}
-    .stat-grid{grid-template-columns:1fr}
     .part-divider .label{font-size:11px}
   }
   @media print{
@@ -552,52 +538,29 @@
       </div>
     </div>
     <div class="panel-body">
-      <h3 class="invest-subhead">Current plan</h3>
-      <div class="form-grid">
-        <div class="field span2"><label>Plan name</label><input id="invCurName" placeholder="e.g. Existing ILP" oninput="updateAll()"></div>
-        <div class="field"><label>Monthly premium</label><input id="invCurMonthly" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>Premium term remaining (yrs)</label><input id="invCurTerm" type="number" step="1" oninput="updateAll()"></div>
-        <div class="field"><label>Account value</label><input id="invCurAccount" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Max withdrawal value</label><input id="invCurMaxWithdraw" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Full surrender value</label><input id="invCurSurrender" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @4%</label><input id="invCurProj4" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @8%</label><input id="invCurProj8" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Nett loss on surrender</label><div class="calc-readonly" id="invCurNettLoss">$0</div></div>
-      </div>
+      <h3 class="invest-subhead">Current plan(s)</h3>
+      <div class="editor-table-wrap"><table class="editor"><thead><tr>
+        <th>Plan name</th><th>Monthly premium</th><th>Premium term (yrs)</th><th>Years remaining</th><th>Account value</th><th>Max withdrawal value</th><th>Full surrender value</th><th>Projected value @4%</th><th>Projected value @8%</th><th>Nett loss on surrender</th><th></th>
+      </tr></thead><tbody id="investCurrentRows"></tbody></table></div>
+      <div class="table-actions"><button class="btn btn-light" onclick="addInvestPlan('current')">+ Add current plan</button></div>
 
-      <h3 class="invest-subhead">Recommended plan A</h3>
-      <div class="form-grid">
-        <div class="field span2"><label>Plan name</label><input id="invAName" placeholder="e.g. Recommended plan A" oninput="updateAll()"></div>
-        <div class="field"><label>Monthly premium</label><input id="invAMonthly" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>New premium term (yrs)</label><input id="invATerm" type="number" step="1" oninput="updateAll()"></div>
-        <div class="field"><label>Annual premium across 3 yrs</label><input id="invAAnnual3yr" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Start-up bonus (2 yrs)</label><input id="invABonusStartup" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>Yr 1 extra campaign bonus</label><input id="invABonusCampaign" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @4%</label><input id="invAProj4" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @8%</label><input id="invAProj8" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Total bonus</label><div class="calc-readonly" id="invABonus">$0</div></div>
-      </div>
-
-      <h3 class="invest-subhead">Recommended plan B <span class="tag">(optional — leave blank if there's only one recommended plan)</span></h3>
-      <div class="form-grid">
-        <div class="field span2"><label>Plan name</label><input id="invBName" placeholder="e.g. Recommended plan B" oninput="updateAll()"></div>
-        <div class="field"><label>Monthly premium</label><input id="invBMonthly" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>New premium term (yrs)</label><input id="invBTerm" type="number" step="1" oninput="updateAll()"></div>
-        <div class="field"><label>Annual premium across 3 yrs</label><input id="invBAnnual3yr" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Start-up bonus (2 yrs)</label><input id="invBBonusStartup" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>Yr 1 extra campaign bonus</label><input id="invBBonusCampaign" type="number" step="10" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @4%</label><input id="invBProj4" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Projected value @8%</label><input id="invBProj8" type="number" step="100" oninput="updateAll()"></div>
-        <div class="field"><label>Total bonus</label><div class="calc-readonly" id="invBBonus">$0</div></div>
-      </div>
+      <h3 class="invest-subhead">Recommended plan(s)</h3>
+      <div class="editor-table-wrap"><table class="editor"><thead><tr>
+        <th>Plan name</th><th>Monthly premium</th><th>New premium term (yrs)</th><th>Annual premium across 3 yrs</th><th>Start-up bonus (2 yrs)</th><th>Yr 1 campaign bonus</th><th>Projected value @4%</th><th>Projected value @8%</th><th>Total bonus</th><th></th>
+      </tr></thead><tbody id="investProposedRows"></tbody></table></div>
+      <div class="table-actions"><button class="btn btn-light" onclick="addInvestPlan('proposed')">+ Add recommended plan</button></div>
+      <p class="small" style="margin-top:10px">Nett loss on surrender and total bonus are calculated automatically. Nett loss = full surrender value − account value. Total bonus = start-up bonus + year-1 campaign bonus + 17% of the annual premium across 3 years.</p>
 
       <h3 class="invest-subhead">Impact summary <span class="tag">(calculated automatically)</span></h3>
-      <div class="stat-grid">
-        <div class="stat-tile"><div class="label">Nett loss on surrender</div><div class="value" id="statNettLoss">$0</div><div class="sub">Full surrender value − account value</div></div>
-        <div class="stat-tile"><div class="label">Total switch bonuses</div><div class="value" id="statTotalBonus">$0</div><div class="sub">Recommended plan A + B</div></div>
-        <div class="stat-tile"><div class="label">Net position now</div><div class="value" id="statCurrentGain">$0</div><div class="sub">Nett loss + total bonuses</div></div>
-        <div class="stat-tile"><div class="label">Future gain @4%</div><div class="value" id="statFutureGain4">$0</div><div class="sub">Vs current plan, net of extra premium</div></div>
-        <div class="stat-tile"><div class="label">Future gain @8%</div><div class="value" id="statFutureGain8">$0</div><div class="sub">Vs current plan, net of extra premium</div></div>
+      <div class="comparison-wrap">
+        <div class="comparison-card">
+          <h3>Investment value: current vs recommended</h3>
+          <div id="investCoverageBars"></div>
+        </div>
+        <div class="finance-card">
+          <h3>Financial impact</h3>
+          <div class="finance-list" id="investFinanceList"></div>
+        </div>
       </div>
       <p class="footer-note">Nett loss, total bonuses and future gain are illustrative and depend on the figures entered above. This is not a guarantee of surrender terms, bonus eligibility or investment performance.</p>
     </div>
@@ -732,18 +695,21 @@
       <div><div class="eyebrow">Part 2 · Investment optimization</div><h2>Current plan vs recommended strategy</h2><div class="pdf-accent-rule"></div></div>
       <p>Comparison of the existing investment-linked plan against the recommended replacement plan(s).</p>
     </div>
-    <div class="pdf-kpis cols-5">
-      <div class="pdf-kpi"><div class="label">Nett loss on surrender</div><div class="val" id="pdfInvNettLoss">$0</div><div class="sub">Surrender value − account value</div></div>
-      <div class="pdf-kpi"><div class="label">Total switch bonuses</div><div class="val" id="pdfInvBonus">$0</div><div class="sub">Recommended plan A + B</div></div>
-      <div class="pdf-kpi"><div class="label">Net position now</div><div class="val" id="pdfInvCurrentGain">$0</div><div class="sub">Nett loss + total bonuses</div></div>
-      <div class="pdf-kpi"><div class="label">Future gain @4%</div><div class="val" id="pdfInvFuture4">$0</div><div class="sub">Vs current plan, net of premium</div></div>
-      <div class="pdf-kpi"><div class="label">Future gain @8%</div><div class="val" id="pdfInvFuture8">$0</div><div class="sub">Vs current plan, net of premium</div></div>
+    <div class="pdf-grid">
+      <div class="pdf-card">
+        <h3>Investment value: current vs recommended</h3>
+        <div id="pdfInvestBars"></div>
+      </div>
+      <div class="pdf-card">
+        <h3>Financial impact</h3>
+        <div id="pdfInvestFinanceList"></div>
+      </div>
     </div>
     <div class="pdf-plan-block">
-      <div class="pdf-plan-head current"><span>Plan comparison</span><span>Illustrative</span></div>
+      <div class="pdf-plan-head current"><span>Plan detail</span><span id="pdfInvestPlanCount">0 plans</span></div>
       <table class="pdf-table">
-        <thead><tr><th>Metric</th><th>Current plan</th><th>Recommended A</th><th>Recommended B</th><th>Combined recommended</th></tr></thead>
-        <tbody id="pdfInvestTable"></tbody>
+        <thead><tr><th>Plan</th><th>Type</th><th>Monthly premium</th><th>Term / remaining (yrs)</th><th>Projected @4%</th><th>Projected @8%</th></tr></thead>
+        <tbody id="pdfInvestPlanRows"></tbody>
       </table>
     </div>
     <div class="pdf-disclaimer">
@@ -769,18 +735,22 @@ const demoState = {
     {purpose:"Retirement",type:"Investment",name:"Retirement Portfolio",death:0,tpd:0,ci:0,early:0,premiumTerm:20,years:20,annual:2400,retirement:180000,remarks:"Illustrative policy / investment value"}
   ],
   invest:{
-    cur:{name:"Legacy ILP",monthly:500,term:15,account:42000,maxWithdraw:38000,surrender:36000,proj4:120000,proj8:165000},
-    a:{name:"Optimized ILP",monthly:500,term:15,annual3yr:6000,bonusStartup:800,bonusCampaign:300,proj4:140000,proj8:195000},
-    b:{name:"Supplementary Plan B",monthly:200,term:15,annual3yr:0,bonusStartup:100,bonusCampaign:0,proj4:20000,proj8:26000}
+    current:[
+      {name:"Legacy ILP",monthly:500,term:20,years:15,account:42000,maxWithdraw:38000,surrender:36000,proj4:120000,proj8:165000}
+    ],
+    proposed:[
+      {name:"Optimized ILP",monthly:500,term:15,annual3yr:6000,bonusStartup:800,bonusCampaign:300,proj4:140000,proj8:195000},
+      {name:"Supplementary Plan B",monthly:200,term:15,annual3yr:0,bonusStartup:100,bonusCampaign:0,proj4:20000,proj8:26000}
+    ]
   }
 };
 
+function blankInvestPlan(kind){
+  if(kind==="current") return {name:"",monthly:0,term:0,years:0,account:0,maxWithdraw:0,surrender:0,proj4:0,proj8:0};
+  return {name:"",monthly:0,term:0,annual3yr:0,bonusStartup:0,bonusCampaign:0,proj4:0,proj8:0};
+}
 function blankInvest(){
-  return {
-    cur:{name:"",monthly:0,term:0,account:0,maxWithdraw:0,surrender:0,proj4:0,proj8:0},
-    a:{name:"",monthly:0,term:0,annual3yr:0,bonusStartup:0,bonusCampaign:0,proj4:0,proj8:0},
-    b:{name:"",monthly:0,term:0,annual3yr:0,bonusStartup:0,bonusCampaign:0,proj4:0,proj8:0}
-  };
+  return {current:[],proposed:[]};
 }
 let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest()};
 
@@ -805,10 +775,10 @@ function signedMoney(v){ return (n(v)>=0?"+":"-")+money(Math.abs(n(v)),true); }
 function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[m])); }
 
 function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
-function loadDemo(){ state=clone(demoState); syncStateToFields(); renderEditors(); updateAll(); saveData(); }
+function loadDemo(){ state=clone(demoState); syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); saveData(); }
 function clearAll(){
   state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest()};
-  syncStateToFields(); renderEditors(); updateAll(); localStorage.removeItem("xccelerate_psr_state");
+  syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); localStorage.removeItem("xccelerate_psr_state");
 }
 function saveData(){
   syncFieldsToState();
@@ -820,7 +790,9 @@ function restoreData(){
     if(raw){state=JSON.parse(raw)} else {state=clone(demoState)}
   }catch(e){state=clone(demoState)}
   state.invest=state.invest||blankInvest(); // older saved sessions predate this section
-  syncStateToFields(); renderEditors(); updateAll();
+  state.invest.current=state.invest.current||[];
+  state.invest.proposed=state.invest.proposed||[];
+  syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll();
 }
 function syncStateToFields(){
   const c=state.client||{};
@@ -833,32 +805,6 @@ function syncStateToFields(){
   document.getElementById("returnLabel").value=c.scenario||"Illustrative";
   document.getElementById("lumpSumOverride").value=c.lumpSumOverride??"";
   document.getElementById("advisorNotes").value=state.notes||"";
-
-  const inv=state.invest||blankInvest();
-  document.getElementById("invCurName").value=inv.cur.name||"";
-  document.getElementById("invCurMonthly").value=n(inv.cur.monthly);
-  document.getElementById("invCurTerm").value=n(inv.cur.term);
-  document.getElementById("invCurAccount").value=n(inv.cur.account);
-  document.getElementById("invCurMaxWithdraw").value=n(inv.cur.maxWithdraw);
-  document.getElementById("invCurSurrender").value=n(inv.cur.surrender);
-  document.getElementById("invCurProj4").value=n(inv.cur.proj4);
-  document.getElementById("invCurProj8").value=n(inv.cur.proj8);
-  document.getElementById("invAName").value=inv.a.name||"";
-  document.getElementById("invAMonthly").value=n(inv.a.monthly);
-  document.getElementById("invATerm").value=n(inv.a.term);
-  document.getElementById("invAAnnual3yr").value=n(inv.a.annual3yr);
-  document.getElementById("invABonusStartup").value=n(inv.a.bonusStartup);
-  document.getElementById("invABonusCampaign").value=n(inv.a.bonusCampaign);
-  document.getElementById("invAProj4").value=n(inv.a.proj4);
-  document.getElementById("invAProj8").value=n(inv.a.proj8);
-  document.getElementById("invBName").value=inv.b.name||"";
-  document.getElementById("invBMonthly").value=n(inv.b.monthly);
-  document.getElementById("invBTerm").value=n(inv.b.term);
-  document.getElementById("invBAnnual3yr").value=n(inv.b.annual3yr);
-  document.getElementById("invBBonusStartup").value=n(inv.b.bonusStartup);
-  document.getElementById("invBBonusCampaign").value=n(inv.b.bonusCampaign);
-  document.getElementById("invBProj4").value=n(inv.b.proj4);
-  document.getElementById("invBProj8").value=n(inv.b.proj8);
 }
 function syncFieldsToState(){
   state.client={
@@ -872,103 +818,148 @@ function syncFieldsToState(){
     lumpSumOverride:document.getElementById("lumpSumOverride").value
   };
   state.notes=document.getElementById("advisorNotes").value;
-
-  state.invest={
-    cur:{
-      name:document.getElementById("invCurName").value,
-      monthly:n(document.getElementById("invCurMonthly").value),
-      term:n(document.getElementById("invCurTerm").value),
-      account:n(document.getElementById("invCurAccount").value),
-      maxWithdraw:n(document.getElementById("invCurMaxWithdraw").value),
-      surrender:n(document.getElementById("invCurSurrender").value),
-      proj4:n(document.getElementById("invCurProj4").value),
-      proj8:n(document.getElementById("invCurProj8").value)
-    },
-    a:{
-      name:document.getElementById("invAName").value,
-      monthly:n(document.getElementById("invAMonthly").value),
-      term:n(document.getElementById("invATerm").value),
-      annual3yr:n(document.getElementById("invAAnnual3yr").value),
-      bonusStartup:n(document.getElementById("invABonusStartup").value),
-      bonusCampaign:n(document.getElementById("invABonusCampaign").value),
-      proj4:n(document.getElementById("invAProj4").value),
-      proj8:n(document.getElementById("invAProj8").value)
-    },
-    b:{
-      name:document.getElementById("invBName").value,
-      monthly:n(document.getElementById("invBMonthly").value),
-      term:n(document.getElementById("invBTerm").value),
-      annual3yr:n(document.getElementById("invBAnnual3yr").value),
-      bonusStartup:n(document.getElementById("invBBonusStartup").value),
-      bonusCampaign:n(document.getElementById("invBBonusCampaign").value),
-      proj4:n(document.getElementById("invBProj4").value),
-      proj8:n(document.getElementById("invBProj8").value)
-    }
-  };
 }
-// Nett loss, per-plan switch bonuses, and future gain @4%/@8% are all
-// derived from the current-vs-recommended figures above, rather than
-// entered directly.
+
+// --- Part 2: Investment optimization -------------------------------------
+// Current and recommended plans are add/remove-able lists, mirroring the
+// Step 2/3 insurance tables. Nett loss (current) and total bonus
+// (recommended) are calculated per-row; the impact summary aggregates
+// across every plan in each list.
+function addInvestPlan(kind){ state.invest[kind].push(blankInvestPlan(kind)); renderInvestEditors(); updateAll(); }
+function removeInvestPlan(kind,index){ state.invest[kind].splice(index,1); renderInvestEditors(); updateAll(); }
+function setInvestPlan(kind,index,key,value){
+  const numeric=["monthly","term","years","account","maxWithdraw","surrender","proj4","proj8","annual3yr","bonusStartup","bonusCampaign"];
+  state.invest[kind][index][key]=numeric.includes(key)?n(value):value;
+  updateInvestCalcCell(kind,index);
+  updateAll();
+}
+function investPlanCalc(kind,p){
+  if(kind==="current") return {nettLoss:n(p.surrender)-n(p.account)};
+  return {bonus:n(p.bonusStartup)+n(p.bonusCampaign)+0.17*n(p.annual3yr)};
+}
+function investNumCell(kind,i,key,val,step=100){
+  return `<td><input type="number" step="${step}" value="${n(val)}" oninput="setInvestPlan('${kind}',${i},'${key}',this.value)"></td>`;
+}
+function investCalcCell(kind,i,val){
+  return `<td><div class="calc-cell" id="investCalc-${kind}-${i}" title="Calculated automatically">${money(val)}</div></td>`;
+}
+function updateInvestCalcCell(kind,index){
+  const p=state.invest[kind][index];
+  const el=document.getElementById(`investCalc-${kind}-${index}`);
+  if(!p||!el) return;
+  const c=investPlanCalc(kind,p);
+  el.textContent=money(kind==="current"?c.nettLoss:c.bonus);
+}
+function renderInvestEditors(){
+  document.getElementById("investCurrentRows").innerHTML=state.invest.current.map((p,i)=>{
+    const c=investPlanCalc("current",p);
+    return `<tr>
+      <td><input class="wide" value="${esc(p.name)}" oninput="setInvestPlan('current',${i},'name',this.value)"></td>
+      ${investNumCell("current",i,"monthly",p.monthly)}${investNumCell("current",i,"term",p.term,1)}${investNumCell("current",i,"years",p.years,1)}
+      ${investNumCell("current",i,"account",p.account)}${investNumCell("current",i,"maxWithdraw",p.maxWithdraw)}${investNumCell("current",i,"surrender",p.surrender)}
+      ${investNumCell("current",i,"proj4",p.proj4)}${investNumCell("current",i,"proj8",p.proj8)}
+      ${investCalcCell("current",i,c.nettLoss)}
+      <td><button class="btn btn-danger" style="padding:7px 9px" onclick="removeInvestPlan('current',${i})">×</button></td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="10" style="text-align:center;color:#999;padding:14px">No current plans added yet.</td></tr>`;
+  document.getElementById("investProposedRows").innerHTML=state.invest.proposed.map((p,i)=>{
+    const c=investPlanCalc("proposed",p);
+    return `<tr>
+      <td><input class="wide" value="${esc(p.name)}" oninput="setInvestPlan('proposed',${i},'name',this.value)"></td>
+      ${investNumCell("proposed",i,"monthly",p.monthly)}${investNumCell("proposed",i,"term",p.term,1)}${investNumCell("proposed",i,"annual3yr",p.annual3yr)}
+      ${investNumCell("proposed",i,"bonusStartup",p.bonusStartup)}${investNumCell("proposed",i,"bonusCampaign",p.bonusCampaign)}
+      ${investNumCell("proposed",i,"proj4",p.proj4)}${investNumCell("proposed",i,"proj8",p.proj8)}
+      ${investCalcCell("proposed",i,c.bonus)}
+      <td><button class="btn btn-danger" style="padding:7px 9px" onclick="removeInvestPlan('proposed',${i})">×</button></td>
+    </tr>`;
+  }).join("") || `<tr><td colspan="9" style="text-align:center;color:#999;padding:14px">No recommended plans added yet.</td></tr>`;
+}
+// Aggregates every current plan vs every recommended plan. Nett loss and
+// total bonus sum across each list; future gain nets off the difference in
+// total premium outlay over each plan's own remaining/new term.
 function investCalc(){
   const inv=state.invest||blankInvest();
-  const cur=inv.cur, a=inv.a, b=inv.b;
-  const nettLoss=n(cur.surrender)-n(cur.account);
-  const bonusA=n(a.bonusStartup)+n(a.bonusCampaign)+0.17*n(a.annual3yr);
-  const bonusB=n(b.bonusStartup)+n(b.bonusCampaign)+0.17*n(b.annual3yr);
-  const totalBonus=bonusA+bonusB;
-  const totalMonthly=n(a.monthly)+n(b.monthly);
-  const totalProj4=n(a.proj4)+n(b.proj4);
-  const totalProj8=n(a.proj8)+n(b.proj8);
-  const currentGain=nettLoss+totalBonus;
-  const extraPremiumOutlay=(totalMonthly-n(cur.monthly))*12*n(cur.term);
-  const futureGain4=(totalProj4-n(cur.proj4))-extraPremiumOutlay;
-  const futureGain8=(totalProj8-n(cur.proj8))-extraPremiumOutlay;
-  return {nettLoss,bonusA,bonusB,totalBonus,totalMonthly,totalProj4,totalProj8,currentGain,extraPremiumOutlay,futureGain4,futureGain8};
+  const ct={monthly:0,account:0,surrender:0,proj4:0,proj8:0,nettLoss:0,lifetimeCost:0};
+  (inv.current||[]).forEach(p=>{
+    ct.monthly+=n(p.monthly); ct.account+=n(p.account); ct.surrender+=n(p.surrender);
+    ct.proj4+=n(p.proj4); ct.proj8+=n(p.proj8);
+    ct.nettLoss+=n(p.surrender)-n(p.account);
+    ct.lifetimeCost+=n(p.monthly)*12*n(p.years);
+  });
+  const pt={monthly:0,proj4:0,proj8:0,bonus:0,lifetimeCost:0};
+  (inv.proposed||[]).forEach(p=>{
+    pt.monthly+=n(p.monthly); pt.proj4+=n(p.proj4); pt.proj8+=n(p.proj8);
+    pt.bonus+=n(p.bonusStartup)+n(p.bonusCampaign)+0.17*n(p.annual3yr);
+    pt.lifetimeCost+=n(p.monthly)*12*n(p.term);
+  });
+  const currentGain=ct.nettLoss+pt.bonus;
+  const extraPremiumOutlay=pt.lifetimeCost-ct.lifetimeCost;
+  const futureGain4=(pt.proj4-ct.proj4)-extraPremiumOutlay;
+  const futureGain8=(pt.proj8-ct.proj8)-extraPremiumOutlay;
+  return {ct,pt,nettLoss:ct.nettLoss,totalBonus:pt.bonus,currentGain,extraPremiumOutlay,futureGain4,futureGain8};
 }
 function hasInvestData(){
   const inv=state.invest||blankInvest();
-  const numericFields=[
-    inv.cur.monthly,inv.cur.term,inv.cur.account,inv.cur.maxWithdraw,inv.cur.surrender,inv.cur.proj4,inv.cur.proj8,
-    inv.a.monthly,inv.a.term,inv.a.annual3yr,inv.a.bonusStartup,inv.a.bonusCampaign,inv.a.proj4,inv.a.proj8,
-    inv.b.monthly,inv.b.term,inv.b.annual3yr,inv.b.bonusStartup,inv.b.bonusCampaign,inv.b.proj4,inv.b.proj8
-  ];
-  const hasNumeric=numericFields.some(v=>n(v)!==0);
-  const hasName=[inv.cur.name,inv.a.name,inv.b.name].some(v=>(v||"").trim()!=="");
-  return hasNumeric||hasName;
+  const anyCurrent=(inv.current||[]).some(p=>n(p.monthly)||n(p.term)||n(p.years)||n(p.account)||n(p.maxWithdraw)||n(p.surrender)||n(p.proj4)||n(p.proj8)||(p.name||"").trim()!=="");
+  const anyProposed=(inv.proposed||[]).some(p=>n(p.monthly)||n(p.term)||n(p.annual3yr)||n(p.bonusStartup)||n(p.bonusCampaign)||n(p.proj4)||n(p.proj8)||(p.name||"").trim()!=="");
+  return anyCurrent||anyProposed;
 }
-function setStatClass(id,val){
-  const el=document.getElementById(id);
-  el.classList.remove("positive","negative");
-  el.classList.add(n(val)>=0?"positive":"negative");
+function buildInvestBars(targetId,pdf=false){
+  const c=investCalc(), metrics=[
+    ["Monthly premium","monthly"],
+    ["Projected value @4%","proj4"],
+    ["Projected value @8%","proj8"]
+  ];
+  const max=Math.max(1,...metrics.flatMap(m=>[c.ct[m[1]],c.pt[m[1]]]));
+  const html=metrics.map(([label,key])=>{
+    const curr=c.ct[key],prop=c.pt[key],d=prop-curr,pc=pctChange(curr,prop);
+    if(pdf){
+      return `<div class="pdf-coverage-row"><div class="pdf-coverage-title"><span>${label}</span><span class="${d>=0?"positive":"negative"}">${signedMoney(d)} · ${pc.text}</span></div>
+        <div class="pdf-bar-line"><span>Current</span><div class="pdf-track"><div class="pdf-fill current" style="width:${Math.max(1,curr/max*100)}%"></div></div><span class="pdf-right">${money(curr,true)}</span></div>
+        <div class="pdf-bar-line"><span>Recommended</span><div class="pdf-track"><div class="pdf-fill proposed" style="width:${Math.max(1,prop/max*100)}%"></div></div><span class="pdf-right">${money(prop,true)}</span></div>
+      </div>`;
+    }
+    return `<div class="coverage-row"><div class="coverage-head"><div class="name">${label}</div><div class="delta ${d>=0?"up":"down"}">${signedMoney(d)} · ${pc.text}</div></div>
+      <div class="bars"><div class="bar-line"><span>Current</span><div class="track"><div class="fill current" style="width:${Math.max(1,curr/max*100)}%"></div></div><span class="bar-value">${money(curr,true)}</span></div>
+      <div class="bar-line"><span>Recommended</span><div class="track"><div class="fill proposed" style="width:${Math.max(1,prop/max*100)}%"></div></div><span class="bar-value">${money(prop,true)}</span></div></div></div>`;
+  }).join("");
+  document.getElementById(targetId).innerHTML=html;
+}
+function investFinanceRows(pdf=false){
+  const c=investCalc();
+  const rows=[
+    ["Monthly premium difference","Current total vs recommended total",c.pt.monthly-c.ct.monthly],
+    ["Nett loss on surrender","Full surrender value − account value",c.nettLoss],
+    ["Total switch bonuses","Recommended plan(s) combined",c.totalBonus],
+    ["Net position now","Nett loss + total bonuses",c.currentGain],
+    ["Future gain @4%","Vs current plan(s), net of extra premium",c.futureGain4],
+    ["Future gain @8%","Vs current plan(s), net of extra premium",c.futureGain8]
+  ];
+  return rows.map(([title,sub,val])=>{
+    const cls=val>0?"positive":val<0?"negative":"";
+    if(pdf) return `<div class="pdf-fin-row"><div class="l"><strong>${title}</strong>${sub}</div><div class="r ${cls}">${money(val)}</div></div>`;
+    return `<div class="finance-row"><div class="metric"><strong>${title}</strong>${sub}</div><div class="money ${cls}">${money(val)}</div></div>`;
+  }).join("");
 }
 function renderInvestScreen(){
-  const c=investCalc();
-  document.getElementById("invCurNettLoss").textContent=money(c.nettLoss);
-  document.getElementById("invABonus").textContent=money(c.bonusA);
-  document.getElementById("invBBonus").textContent=money(c.bonusB);
-  document.getElementById("statNettLoss").textContent=money(c.nettLoss); setStatClass("statNettLoss",c.nettLoss);
-  document.getElementById("statTotalBonus").textContent=money(c.totalBonus); setStatClass("statTotalBonus",c.totalBonus);
-  document.getElementById("statCurrentGain").textContent=money(c.currentGain); setStatClass("statCurrentGain",c.currentGain);
-  document.getElementById("statFutureGain4").textContent=money(c.futureGain4); setStatClass("statFutureGain4",c.futureGain4);
-  document.getElementById("statFutureGain8").textContent=money(c.futureGain8); setStatClass("statFutureGain8",c.futureGain8);
+  buildInvestBars("investCoverageBars",false);
+  document.getElementById("investFinanceList").innerHTML=investFinanceRows(false);
+}
+function investPlanPdfRows(){
+  const inv=state.invest||blankInvest();
+  const rows=[
+    ...(inv.current||[]).map(p=>`<tr><td><strong>${esc(p.name||"Current plan")}</strong></td><td>Current</td><td>${money(p.monthly)}</td><td>${n(p.years)||"—"}</td><td>${money(p.proj4)}</td><td>${money(p.proj8)}</td></tr>`),
+    ...(inv.proposed||[]).map(p=>`<tr><td><strong>${esc(p.name||"Recommended plan")}</strong></td><td>Recommended</td><td>${money(p.monthly)}</td><td>${n(p.term)||"—"}</td><td>${money(p.proj4)}</td><td>${money(p.proj8)}</td></tr>`)
+  ];
+  return rows.join("") || `<tr><td colspan="6" style="text-align:center;color:#999;padding:6mm">No plans entered</td></tr>`;
 }
 function renderInvestPdf(){
-  const c=investCalc(), inv=state.invest||blankInvest();
-  const pdfInvVals=[["pdfInvNettLoss",c.nettLoss],["pdfInvBonus",c.totalBonus],["pdfInvCurrentGain",c.currentGain],["pdfInvFuture4",c.futureGain4],["pdfInvFuture8",c.futureGain8]];
-  pdfInvVals.forEach(([id,val])=>{
-    const el=document.getElementById(id);
-    el.textContent=money(val);
-    el.className="val "+(n(val)>=0?"positive":"negative");
-  });
-  const rows=[
-    ["Plan name",esc(inv.cur.name)||"—",esc(inv.a.name)||"—",esc(inv.b.name)||"—",""],
-    ["Monthly premium",money(inv.cur.monthly),money(inv.a.monthly),money(inv.b.monthly),money(c.totalMonthly)],
-    ["Premium term (yrs)",n(inv.cur.term)||"—",n(inv.a.term)||"—",n(inv.b.term)||"—",""],
-    ["Account value / full surrender",`${money(inv.cur.account)} / ${money(inv.cur.surrender)}`,"—","—",""],
-    ["Projected value @4%",money(inv.cur.proj4),money(inv.a.proj4),money(inv.b.proj4),money(c.totalProj4)],
-    ["Projected value @8%",money(inv.cur.proj8),money(inv.a.proj8),money(inv.b.proj8),money(c.totalProj8)]
-  ];
-  document.getElementById("pdfInvestTable").innerHTML=rows.map(r=>`<tr><td><strong>${r[0]}</strong></td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]!==""?`<strong>${r[4]}</strong>`:""}</td></tr>`).join("");
+  buildInvestBars("pdfInvestBars",true);
+  document.getElementById("pdfInvestFinanceList").innerHTML=investFinanceRows(true);
+  const inv=state.invest||blankInvest();
+  const count=(inv.current||[]).length+(inv.proposed||[]).length;
+  document.getElementById("pdfInvestPlanCount").textContent=`${count} plan${count===1?"":"s"}`;
+  document.getElementById("pdfInvestPlanRows").innerHTML=investPlanPdfRows();
 }
 
 function blankPlan(kind){
