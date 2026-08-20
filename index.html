@@ -192,6 +192,13 @@
   table.editor.editor-transposed td.row-label{font-weight:700;color:#4a4c52;background:#faf9f6;white-space:nowrap;position:sticky;left:0;border-right:1px solid #eceae4}
   .empty-editor-note{padding:16px;color:#999;text-align:center;background:#faf9f6;border-radius:10px}
   .table-actions{display:flex;gap:10px;margin-top:15px}
+  .toggle-switch{display:flex;align-items:center;gap:9px;cursor:pointer;flex-shrink:0;white-space:nowrap}
+  .toggle-switch input{position:absolute;opacity:0;width:0;height:0}
+  .toggle-track{width:38px;height:22px;background:#ddd9d1;border-radius:20px;position:relative;transition:background .15s;flex-shrink:0}
+  .toggle-thumb{position:absolute;top:2px;left:2px;width:18px;height:18px;background:white;border-radius:50%;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+  .toggle-switch input:checked+.toggle-track{background:var(--red)}
+  .toggle-switch input:checked+.toggle-track .toggle-thumb{left:18px}
+  .toggle-label{font-size:13px;font-weight:700;color:#4a4c52}
   .small{font-size:12px;color:#777980;line-height:1.55}
   .projection-card{
     display:grid;grid-template-columns:1fr 1fr;gap:18px;
@@ -449,6 +456,11 @@
         <h2>Cash Value Projection</h2>
         <p>The projection reinvests any lump sum released plus the yearly difference between current and proposed premiums, while respecting each plan’s remaining premium term.</p>
       </div>
+      <label class="toggle-switch">
+        <input type="checkbox" id="includeProjectionToggle" checked oninput="setIncludeProjection(this.checked)">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-label">Include in PDF</span>
+      </label>
     </div>
     <div class="panel-body">
       <div class="projection-card">
@@ -887,7 +899,8 @@ const demoState = {
       {name:"Optimized ILP",monthly:500,term:15,bonusStartup:800,bonusCampaign:300,proj4:140000,proj8:195000},
       {name:"Supplementary Plan B",monthly:200,term:15,bonusStartup:100,bonusCampaign:0,proj4:20000,proj8:26000}
     ]
-  }
+  },
+  includeProjection:true
 };
 
 function blankInvestPlan(kind){
@@ -897,7 +910,11 @@ function blankInvestPlan(kind){
 function blankInvest(){
   return {current:[],proposed:[]};
 }
-let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest()};
+let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:true};
+function setIncludeProjection(val){
+  state.includeProjection=val;
+  saveData();
+}
 
 let currentTab="insurance";
 function showTab(tab){
@@ -933,7 +950,7 @@ function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&
 function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
 function loadDemo(){ state=clone(demoState); syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); saveData(); }
 function clearAll(){
-  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest()};
+  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:true};
   syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); localStorage.removeItem("xccelerate_psr_state");
 }
 function saveData(){
@@ -948,6 +965,7 @@ function restoreData(){
   state.invest=state.invest||blankInvest(); // older saved sessions predate this section
   state.invest.current=state.invest.current||[];
   state.invest.proposed=state.invest.proposed||[];
+  if(state.includeProjection===undefined) state.includeProjection=true; // older saved sessions predate this toggle
   syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll();
 }
 function syncStateToFields(){
@@ -961,6 +979,7 @@ function syncStateToFields(){
   document.getElementById("returnLabel").value=c.scenario||"Illustrative";
   document.getElementById("lumpSumOverride").value=c.lumpSumOverride??"";
   document.getElementById("advisorNotes").value=state.notes||"";
+  document.getElementById("includeProjectionToggle").checked=state.includeProjection!==false;
 }
 function syncFieldsToState(){
   state.client={
@@ -1525,6 +1544,7 @@ async function downloadPDFInner(type){
   const filename=`${namePrefix}_${(state.client.name||"Client").replace(/[^a-z0-9]+/gi,"_")}_${state.client.date||"Review"}.pdf`;
   const source=document.getElementById("pdf-report");
   let pageEls=[...source.querySelectorAll(`.pdf-page[data-group="${type}"]`)];
+  if(!state.includeProjection) pageEls=pageEls.filter(el=>el.dataset.page!=="insurance-projection");
   // Render each A4 page individually with html2canvas and stitch with jsPDF.
   // (html2pdf.js's own bundler was found to mis-center its internal capture
   // container, silently cropping/misaligning the exported pages.)
