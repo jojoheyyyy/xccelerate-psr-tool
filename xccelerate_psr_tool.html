@@ -457,12 +457,12 @@
         <p>The projection reinvests any lump sum released plus the yearly difference between current and proposed premiums, while respecting each plan’s remaining premium term.</p>
       </div>
       <label class="toggle-switch">
-        <input type="checkbox" id="includeProjectionToggle" checked oninput="setIncludeProjection(this.checked)">
+        <input type="checkbox" id="includeProjectionToggle" oninput="setIncludeProjection(this.checked)">
         <span class="toggle-track"><span class="toggle-thumb"></span></span>
         <span class="toggle-label">Include in PDF</span>
       </label>
     </div>
-    <div class="panel-body">
+    <div class="panel-body" id="investmentPanelBody">
       <div class="projection-card">
         <div class="projection-hero">
           <div class="eyebrow" style="color:#ff617d">Projected reinvested surplus</div>
@@ -900,7 +900,7 @@ const demoState = {
       {name:"Supplementary Plan B",monthly:200,term:15,bonusStartup:100,bonusCampaign:0,proj4:20000,proj8:26000}
     ]
   },
-  includeProjection:true
+  includeProjection:false
 };
 
 function blankInvestPlan(kind){
@@ -910,9 +910,10 @@ function blankInvestPlan(kind){
 function blankInvest(){
   return {current:[],proposed:[]};
 }
-let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:true};
+let state = {client:{},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:false};
 function setIncludeProjection(val){
   state.includeProjection=val;
+  document.getElementById("investmentPanelBody").style.display=val?"":"none";
   saveData();
 }
 
@@ -950,7 +951,7 @@ function esc(s){ return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&
 function clone(obj){ return JSON.parse(JSON.stringify(obj)); }
 function loadDemo(){ state=clone(demoState); syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); saveData(); }
 function clearAll(){
-  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:true};
+  state={client:{name:"",date:new Date().toISOString().slice(0,10),currentAge:35,retirementAge:65,projectedReturn:5,consultant:"",scenario:"Illustrative",lumpSumOverride:""},notes:"",current:[],proposed:[],invest:blankInvest(),includeProjection:false};
   syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll(); localStorage.removeItem("xccelerate_psr_state");
 }
 function saveData(){
@@ -965,7 +966,7 @@ function restoreData(){
   state.invest=state.invest||blankInvest(); // older saved sessions predate this section
   state.invest.current=state.invest.current||[];
   state.invest.proposed=state.invest.proposed||[];
-  if(state.includeProjection===undefined) state.includeProjection=true; // older saved sessions predate this toggle
+  if(state.includeProjection===undefined) state.includeProjection=false; // older saved sessions predate this toggle
   syncStateToFields(); renderEditors(); renderInvestEditors(); updateAll();
 }
 function syncStateToFields(){
@@ -979,7 +980,8 @@ function syncStateToFields(){
   document.getElementById("returnLabel").value=c.scenario||"Illustrative";
   document.getElementById("lumpSumOverride").value=c.lumpSumOverride??"";
   document.getElementById("advisorNotes").value=state.notes||"";
-  document.getElementById("includeProjectionToggle").checked=state.includeProjection!==false;
+  document.getElementById("includeProjectionToggle").checked=state.includeProjection===true;
+  document.getElementById("investmentPanelBody").style.display=state.includeProjection===true?"":"none";
 }
 function syncFieldsToState(){
   state.client={
