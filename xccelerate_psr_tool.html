@@ -859,7 +859,6 @@ function unlockApp(){
 function checkLockPassword(){
   const input=document.getElementById("lockPassword");
   if(input.value===LOCK_PASSWORD){
-    localStorage.setItem("xcc_unlocked","1");
     unlockApp();
   } else {
     document.getElementById("lockError").textContent="Incorrect password. Try again.";
@@ -870,11 +869,7 @@ function checkLockPassword(){
 document.getElementById("lockPassword").addEventListener("keydown",e=>{
   if(e.key==="Enter") checkLockPassword();
 });
-if(localStorage.getItem("xcc_unlocked")==="1"){
-  unlockApp();
-} else {
-  document.getElementById("lockPassword").focus();
-}
+document.getElementById("lockPassword").focus();
 
 const PURPOSES = ["Protection","Retirement","Investment","Savings","Medical","Other"];
 const PLAN_TYPES = ["Whole Life","Term","ILP"];
