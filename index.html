@@ -1066,22 +1066,43 @@ function investCalc(){
 }
 function investOutcomeBarsHtml(pdf=false){
   const c=investCalc();
-  const metrics=[
-    ["Current gain (start-up bonus − surrender penalty)",c.currentGain],
-    ["Nett future gain @4%",c.futureGain4],
-    ["Nett future gain @8%",c.futureGain8]
+
+  // Current gain has no natural "current vs recommended" pair (it nets a
+  // one-off bonus against a one-off surrender penalty), so it stays a
+  // single magnitude bar.
+  const gain=c.currentGain, gainCls=gain>=0?"positive":"negative";
+  const gainHtml=pdf
+    ? `<div class="pdf-coverage-row"><div class="pdf-coverage-title"><span>Current gain (start-up bonus − surrender penalty)</span><span class="${gainCls}">${money(gain)}</span></div>
+        <div class="pdf-bar-line"><span>Value</span><div class="pdf-track"><div class="pdf-fill ${gainCls}" style="width:100%"></div></div><span class="pdf-right">${money(gain,true)}</span></div>
+      </div>`
+    : `<div class="coverage-row"><div class="coverage-head"><div class="name">Current gain (start-up bonus − surrender penalty)</div><div class="delta ${gain>=0?"up":"down"}">${money(gain)}</div></div>
+      <div class="bars"><div class="bar-line"><span>Value</span><div class="track"><div class="fill ${gainCls}" style="width:100%"></div></div><span class="bar-value">${money(gain,true)}</span></div></div></div>`;
+
+  // Future gain @4%/@8% show the actual current vs recommended projected
+  // plan values (so the FC can see what's being compared), with the header
+  // delta reporting the nett future gain -- net of the extra premium paid --
+  // rather than the raw difference between the two projected values.
+  const pairMetrics=[
+    ["Future gain @4%",c.ct.proj4,c.pt.proj4,c.futureGain4],
+    ["Future gain @8%",c.ct.proj8,c.pt.proj8,c.futureGain8]
   ];
-  const max=Math.max(1,...metrics.map(m=>Math.abs(m[1])));
-  return metrics.map(([label,val])=>{
-    const cls=val>=0?"positive":"negative", width=Math.max(1,Math.abs(val)/max*100);
+  const maxPair=Math.max(1,...pairMetrics.flatMap(m=>[m[1],m[2]]));
+  const pairHtml=pairMetrics.map(([label,curr,prop,netGain])=>{
+    const pct=curr!==0?(netGain/Math.abs(curr)*100):null;
+    const pctText=pct===null?(netGain>0?"New gain":"No change"):(pct>=0?"+":"")+pct.toFixed(0)+"%";
+    const cls=netGain>=0?"positive":"negative";
     if(pdf){
-      return `<div class="pdf-coverage-row"><div class="pdf-coverage-title"><span>${label}</span><span class="${cls}">${money(val)}</span></div>
-        <div class="pdf-bar-line"><span>Value</span><div class="pdf-track"><div class="pdf-fill ${cls}" style="width:${width}%"></div></div><span class="pdf-right">${money(val,true)}</span></div>
+      return `<div class="pdf-coverage-row"><div class="pdf-coverage-title"><span>${label}</span><span class="${cls}">${signedMoney(netGain)} · ${pctText}</span></div>
+        <div class="pdf-bar-line"><span>Current</span><div class="pdf-track"><div class="pdf-fill current" style="width:${Math.max(1,curr/maxPair*100)}%"></div></div><span class="pdf-right">${money(curr,true)}</span></div>
+        <div class="pdf-bar-line"><span>Recommended</span><div class="pdf-track"><div class="pdf-fill proposed" style="width:${Math.max(1,prop/maxPair*100)}%"></div></div><span class="pdf-right">${money(prop,true)}</span></div>
       </div>`;
     }
-    return `<div class="coverage-row"><div class="coverage-head"><div class="name">${label}</div><div class="delta ${val>=0?"up":"down"}">${money(val)}</div></div>
-      <div class="bars"><div class="bar-line"><span>Value</span><div class="track"><div class="fill ${cls}" style="width:${width}%"></div></div><span class="bar-value">${money(val,true)}</span></div></div></div>`;
+    return `<div class="coverage-row"><div class="coverage-head"><div class="name">${label}</div><div class="delta ${netGain>=0?"up":"down"}">${signedMoney(netGain)} · ${pctText}</div></div>
+      <div class="bars"><div class="bar-line"><span>Current</span><div class="track"><div class="fill current" style="width:${Math.max(1,curr/maxPair*100)}%"></div></div><span class="bar-value">${money(curr,true)}</span></div>
+      <div class="bar-line"><span>Recommended</span><div class="track"><div class="fill proposed" style="width:${Math.max(1,prop/maxPair*100)}%"></div></div><span class="bar-value">${money(prop,true)}</span></div></div></div>`;
   }).join("");
+
+  return gainHtml+pairHtml;
 }
 function investFinanceRows(){
   const c=investCalc();
