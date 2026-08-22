@@ -776,24 +776,12 @@
         <div style="font-size:8pt;color:#777;margin-top:1.5mm"><span id="pdfInvestReviewDate">—</span> · Prepared by <span id="pdfInvestConsultant">—</span></div>
       </div>
     </div>
-    <div class="pdf-headline">
+    <div class="pdf-headline" style="grid-template-columns:1fr">
       <div>
         <div class="eyebrow">Summary recommendation</div>
         <h1>A clearer picture of your investment-linked plan switch.</h1>
         <div class="pdf-accent-rule"></div>
         <p style="margin-top:2.5mm">This page highlights the most important changes between the current and recommended investment-linked plan(s). Detailed plan information follows on the next page.</p>
-      </div>
-      <div class="pdf-hero-badge">
-        <div class="pdf-hero-stat">
-          <div class="overline">Projected value @8%</div>
-          <div class="compare"><span class="from" id="pdfInvestHeroProjFrom">$0</span><span class="arrow">&rarr;</span><span class="to" id="pdfInvestHeroProjTo">$0</span></div>
-          <div class="delta" id="pdfInvestHeroProjDelta">—</div>
-        </div>
-        <div class="pdf-hero-stat">
-          <div class="overline">Monthly premium</div>
-          <div class="compare"><span class="from" id="pdfInvestHeroMonthlyFrom">$0</span><span class="arrow">&rarr;</span><span class="to" id="pdfInvestHeroMonthlyTo">$0</span></div>
-          <div class="delta" id="pdfInvestHeroMonthlyDelta">—</div>
-        </div>
       </div>
     </div>
     <div class="pdf-kpis">
@@ -1475,18 +1463,7 @@ function updateInvestmentPdf(){
   document.getElementById("pdfInvestReviewDate").textContent=cl.date||"—";
   document.getElementById("pdfInvestConsultant").textContent=cl.consultant||"Financial Consultant";
 
-  document.getElementById("pdfInvestHeroProjFrom").textContent=money(c.ct.proj8,true);
-  document.getElementById("pdfInvestHeroProjTo").textContent=money(c.pt.proj8,true);
-  const projDelta=c.pt.proj8-c.ct.proj8;
-  document.getElementById("pdfInvestHeroProjDelta").textContent=`${signedMoney(projDelta)} at 8% p.a.`;
-  document.getElementById("pdfInvestHeroProjDelta").className="delta "+(projDelta>=0?"":"down");
-
   const monthlyDelta=c.ct.monthly-c.pt.monthly;
-  document.getElementById("pdfInvestHeroMonthlyFrom").textContent=money(c.ct.monthly,true);
-  document.getElementById("pdfInvestHeroMonthlyTo").textContent=money(c.pt.monthly,true);
-  document.getElementById("pdfInvestHeroMonthlyDelta").textContent=(monthlyDelta>=0?"Save ":"Increase ")+money(Math.abs(monthlyDelta),true)+" per month";
-  document.getElementById("pdfInvestHeroMonthlyDelta").className="delta "+(monthlyDelta>=0?"":"down");
-
   document.getElementById("pdfInvestKpiMonthly").textContent=(monthlyDelta>=0?"Save ":"Increase ")+money(Math.abs(monthlyDelta));
   document.getElementById("pdfInvestKpiMonthly").className="val "+(monthlyDelta>=0?"positive":"negative");
   document.getElementById("pdfInvestKpiMonthlySub").textContent=`${money(c.ct.monthly)} → ${money(c.pt.monthly)} p.m.`;
